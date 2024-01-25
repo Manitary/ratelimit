@@ -5,12 +5,12 @@ This module includes the decorator used to rate limit function invocations.
 Additionally this module includes a naive retry strategy to be used in
 conjunction with the rate limit decorator.
 """
-from functools import wraps
-from math import floor
-
-import time
 import sys
 import threading
+import time
+from functools import wraps
+from math import floor
+from typing import Callable
 
 from ratelimit.exception import RateLimitException
 from ratelimit.utils import now
@@ -21,7 +21,13 @@ class RateLimitDecorator(object):
     Rate limit decorator class.
     """
 
-    def __init__(self, calls=15, period=900, clock=now(), raise_on_limit=True):
+    def __init__(
+        self,
+        calls: int = 15,
+        period: int = 900,
+        clock: Callable[[], float] = now(),
+        raise_on_limit: bool = True,
+    ) -> None:
         """
         Instantiate a RateLimitDecorator with some sensible defaults. By
         default the Twitter rate limiting window is respected (15 calls every
@@ -44,18 +50,17 @@ class RateLimitDecorator(object):
         # Add thread safety.
         self.lock = threading.RLock()
 
-    def __call__(self, func):
+    def __call__[**P, T](self, func: Callable[P, T]):
         """
         Return a wrapped function that prevents further function invocations if
         previously called within a specified period of time.
 
         :param function func: The function to decorate.
         :return: Decorated function.
-        :rtype: function
         """
 
         @wraps(func)
-        def wrapper(*args, **kargs):
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> T | None:
             """
             Extend the behaviour of the decorated function, forwarding function
             invocations previously called no sooner than a specified period of
@@ -64,7 +69,7 @@ class RateLimitDecorator(object):
             exponential backoff.
 
             :param args: non-keyword variable length argument list to the decorated function.
-            :param kargs: keyworded variable length argument list to the decorated function.
+            :param kwargs: keyword variable length argument list to the decorated function.
             :raises: RateLimitException
             """
             with self.lock:
@@ -83,45 +88,43 @@ class RateLimitDecorator(object):
                 if self.num_calls > self.clamped_calls:
                     if self.raise_on_limit:
                         raise RateLimitException("too many calls", period_remaining)
-                    return
+                    return None
 
-            return func(*args, **kargs)
+            return func(*args, **kwargs)
 
         return wrapper
 
-    def __period_remaining(self):
+    def __period_remaining(self) -> float:
         """
         Return the period remaining for the current rate limit window.
 
-        :return: The remaing period.
-        :rtype: float
+        :return: The remaining period.
         """
         elapsed = self.clock() - self.last_reset
         return self.period - elapsed
 
 
-def sleep_and_retry(func):
+def sleep_and_retry[**P, T](func: Callable[P, T]):
     """
     Return a wrapped function that rescues rate limit exceptions, sleeping the
     current thread until rate limit resets.
 
     :param function func: The function to decorate.
     :return: Decorated function.
-    :rtype: function
     """
 
     @wraps(func)
-    def wrapper(*args, **kargs):
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         """
         Call the rate limited function. If the function raises a rate limit
-        exception sleep for the remaing time period and retry the function.
+        exception sleep for the remaining time period and retry the function.
 
         :param args: non-keyword variable length argument list to the decorated function.
-        :param kargs: keyworded variable length argument list to the decorated function.
+        :param kwargs: keyword variable length argument list to the decorated function.
         """
         while True:
             try:
-                return func(*args, **kargs)
+                return func(*args, **kwargs)
             except RateLimitException as exception:
                 time.sleep(exception.period_remaining)
 

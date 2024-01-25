@@ -1,16 +1,17 @@
 """
-Rate limit utilty functions.
+Rate limit utility functions.
 """
 import time
+from typing import Callable
 
 
-def now():
+def now() -> Callable[[], float]:
     """
     Use monotonic time if available, otherwise fall back to the system clock.
 
     :return: Time function.
-    :rtype: function
     """
     if hasattr(time, "monotonic"):
         return time.monotonic
+
     return time.time
