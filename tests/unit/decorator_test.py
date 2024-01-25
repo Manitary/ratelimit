@@ -1,21 +1,21 @@
 from ratelimit import limits, RateLimitException
 from tests import unittest, clock
 
-class TestDecorator(unittest.TestCase):
 
+class TestDecorator(unittest.TestCase):
     @limits(calls=1, period=10, clock=clock)
     def increment(self):
-        '''
+        """
         Increment the counter at most once every 10 seconds.
-        '''
+        """
         self.count += 1
 
     @limits(calls=1, period=10, clock=clock, raise_on_limit=False)
     def increment_no_exception(self):
-        '''
+        """
         Increment the counter at most once every 10 seconds, but w/o rasing an
         exception when reaching limit.
-        '''
+        """
         self.count += 1
 
     def setUp(self):

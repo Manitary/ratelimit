@@ -1,5 +1,6 @@
 import unittest
 
+
 class Clock(object):
     def __init__(self):
         self.reset()
@@ -13,9 +14,7 @@ class Clock(object):
     def increment(self, num=1):
         self.now += num
 
+
 clock = Clock()
 
-__all__ = [
-    'unittest',
-    'clock'
-]
+__all__ = ["unittest", "clock"]
