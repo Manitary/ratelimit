@@ -50,7 +50,9 @@ class RateLimitDecorator:
         # Add thread safety.
         self.lock = threading.RLock()
 
-    def __call__[**P, T](self, func: Callable[P, T]):
+    def __call__[
+        **P, T
+    ](self, func: Callable[P, T]) -> Callable[[Callable[P, T]], T | None]:
         """
         Return a wrapped function that prevents further function invocations if
         previously called within a specified period of time.
@@ -104,7 +106,7 @@ class RateLimitDecorator:
         return self.period - elapsed
 
 
-def sleep_and_retry[**P, T](func: Callable[P, T]):
+def sleep_and_retry[**P, T](func: Callable[P, T]) -> Callable[[Callable[P, T]], T]:
     """
     Return a wrapped function that rescues rate limit exceptions, sleeping the
     current thread until rate limit resets.
