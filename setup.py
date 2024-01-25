@@ -3,9 +3,9 @@ from setuptools import setup
 import ratelimit
 
 
-def readme():
+def readme() -> str:
     """Read README file"""
-    with open("README.rst") as infile:
+    with open("README.rst", encoding="utf-8") as infile:
         return infile.read()
 
 
