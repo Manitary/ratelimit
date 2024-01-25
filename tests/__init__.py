@@ -12,6 +12,4 @@ class Clock:
         self.now += num
 
 
-clock = Clock()
-
-__all__ = ["clock"]
+__all__ = ["Clock"]

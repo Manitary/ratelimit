@@ -1,11 +1,15 @@
 import pytest
 
 from ratelimit import RateLimitException, limits
-from tests import clock
+from tests import Clock
+
+clock = Clock()
 
 
 class TestDecorator:
-    count = 0
+    @classmethod
+    def setup_class(cls) -> None:
+        cls.count = 0
 
     def setup_method(self) -> None:
         clock.increment(10)
@@ -37,7 +41,6 @@ class TestDecorator:
     def test_reset(self) -> None:
         self.increment()
         clock.increment(10)
-
         self.increment()
         assert self.count == 2
 
