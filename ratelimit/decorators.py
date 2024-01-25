@@ -16,7 +16,7 @@ from ratelimit.exception import RateLimitException
 from ratelimit.utils import now
 
 
-class RateLimitDecorator(object):
+class RateLimitDecorator:
     """
     Rate limit decorator class.
     """

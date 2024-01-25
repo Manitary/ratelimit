@@ -1,3 +1,8 @@
+from typing import Iterator
+
+import pytest
+
+
 class Clock:
     def __init__(self) -> None:
         self.reset()
@@ -12,6 +17,6 @@ class Clock:
         self.now += num
 
 
-clock = Clock()
-
-__all__ = ["clock"]
+@pytest.fixture(autouse=True, scope="class")
+def clock() -> Iterator[Clock]:
+    yield Clock()
