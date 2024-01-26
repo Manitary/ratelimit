@@ -52,7 +52,7 @@ class RateLimitDecorator:
 
     def __call__[
         **P, T
-    ](self, func: Callable[P, T]) -> Callable[[Callable[P, T]], T | None]:
+    ](self, func: Callable[P, T]) -> Callable[P, T | None]:
         """
         Return a wrapped function that prevents further function invocations if
         previously called within a specified period of time.
@@ -106,7 +106,7 @@ class RateLimitDecorator:
         return self.period - elapsed
 
 
-def sleep_and_retry[**P, T](func: Callable[P, T]) -> Callable[[Callable[P, T]], T]:
+def sleep_and_retry[**P, T](func: Callable[P, T]) -> Callable[P, T]:
     """
     Return a wrapped function that rescues rate limit exceptions, sleeping the
     current thread until rate limit resets.
